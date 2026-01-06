@@ -1,7 +1,8 @@
 import { useRef } from "react";
-import Typewriter from "@/Typewriter/Typewriter";
+import Image from "next/image";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
+import Typewriter from "@/Typewriter/Typewriter";
 
 const Hero = () => {
   // Refs for animaiton DOM elements
@@ -82,16 +83,29 @@ const Hero = () => {
       <div className="flex flex-col space-y-5 mt-10 md:flex-row md:space-y-0 md:space-x-10">
         <button
           ref={resumeRef}
-          className="border-2 px-7 py-5 text-xl cursor-pointer flex justify-center items-center md:w-75.5"
+          className="border-2 border-gray-300
+ px-7 py-5 text-xl cursor-pointer flex justify-center items-center md:w-75.5"
         >
-          <img src="file.svg" alt="file_icon" className="w-7.5 mr-2.5" />
+          <Image
+            src="/file.svg"
+            alt="file_icon"
+            width={30}
+            height={30}
+            className="mr-2.5"
+          />
           Download My Resume
         </button>
         <button
           ref={githubRef}
-          className="border-2 px-7 py-5 text-xl cursor-pointer flex justify-center items-center md:w-75.5"
+          className="border-2 border-gray-300 px-7 py-5 text-xl cursor-pointer flex justify-center items-center md:w-75.5"
         >
-          <img src="github.svg" alt="github_icon" className="w-7.5 mr-2.5" />
+          <Image
+            src="/github.svg"
+            alt="github_icon"
+            width={30}
+            height={30}
+            className="mr-2.5"
+          />
           Github
         </button>
       </div>
