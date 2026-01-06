@@ -4,14 +4,26 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 
 const Hero = () => {
-  const headingRef = useRef<HTMLHeadingElement>(null);
-  const typewriterRef = useRef<HTMLDivElement>(null);
-  const resumeRef = useRef<HTMLButtonElement>(null);
-  const githubRef = useRef<HTMLButtonElement>(null);
+  // Refs for animaiton DOM elements
+  const headingRef = useRef<HTMLHeadingElement | null>(null);
+  const typewriterRef = useRef<HTMLDivElement | null>(null);
+  const resumeRef = useRef<HTMLButtonElement | null>(null);
+  const githubRef = useRef<HTMLButtonElement | null>(null);
 
+  // Timeline to control GSAP animation
   const tl = useRef<gsap.core.Timeline | null>(null);
 
   useGSAP(() => {
+    // Stop if any element is not found
+    if (
+      !headingRef.current ||
+      !typewriterRef.current ||
+      !resumeRef.current ||
+      !githubRef.current
+    )
+      return;
+
+    // Hero section entry animation
     tl.current = gsap
       .timeline()
       .from(headingRef.current, {
@@ -24,6 +36,7 @@ const Hero = () => {
         opacity: 0,
         duration: 0.5,
       })
+      // Animate both buttons at the same time using a label
       .from(
         resumeRef.current,
         {
@@ -43,7 +56,8 @@ const Hero = () => {
   });
 
   return (
-    <section className="flex flex-col items-center justify-center space-y-5 h-screen p-5 text-center overflow-x-hidden ">
+    <section className="flex flex-col space-y-5 h-screen p-5 text-center overflow-x-hidden ">
+      {/* Main heading */}
       <h1
         ref={headingRef}
         className="text-4xl font-bold leading-snug md:text-6xl"
@@ -51,7 +65,7 @@ const Hero = () => {
         Hi, I’m Shubham JVKE
       </h1>
 
-      {/* reserved space */}
+      {/* Space reserved to avoid layout shift */}
       <div
         ref={typewriterRef}
         className="mt-4 h-[1.6em] text-primary text-2xl md:text-3xl font-mono leading-snug"
@@ -64,6 +78,7 @@ const Hero = () => {
           ]}
         />
       </div>
+      {/* Buttons section */}
       <div className="flex flex-col space-y-5 mt-10 md:flex-row md:space-y-0 md:space-x-10">
         <button
           ref={resumeRef}

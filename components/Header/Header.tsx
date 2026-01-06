@@ -1,19 +1,22 @@
 import { useState, useRef } from "react";
+import Image from "next/image";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
 
+  // Refs for animaiton DOM elements
   const logoRef = useRef<HTMLHeadingElement | null>(null);
-  const menuRef = useRef<HTMLImageElement | null>(null);
-  const crossRef = useRef<HTMLImageElement | null>(null);
+  const menuRef = useRef<HTMLDivElement | null>(null);  // mobile menu icon
+  const crossRef = useRef<HTMLDivElement | null>(null); // mobile close icon
   const menuItemsRef = useRef<HTMLUListElement | null>(null);
 
-  // Timeline Ref
-  const mobileTl = useRef<gsap.core.Timeline | null>(null); // Mobile Timeline
-  const desktopTl = useRef<gsap.core.Timeline | null>(null); // Desktop TImeline
+  // Timeline to control GSAP animation
+  const mobileTl = useRef<gsap.core.Timeline | null>(null); // mobile Timeline
+  const desktopTl = useRef<gsap.core.Timeline | null>(null); // desktop TImeline
 
+  // Setup GSAP animations based on viewport size
   useGSAP(() => {
     const mm = gsap.matchMedia();
 
@@ -21,11 +24,13 @@ const Header = () => {
     mm.add("(max-width: 767px)", () => {
       mobileTl.current = gsap
         .timeline({ paused: true })
+        // hide menu icon
         .to(menuRef.current, {
           y: -20,
           autoAlpha: 0,
           duration: 0.25,
         })
+        // show menu panel
         .to(
           menuItemsRef.current,
           {
@@ -35,11 +40,13 @@ const Header = () => {
           },
           "<"
         )
+        // stagger menu items
         .from(menuItemsRef.current!.children, {
           x: 100,
           opacity: 0,
           stagger: 0.1,
         })
+        // show close icon
         .fromTo(
           crossRef.current,
           { autoAlpha: 0, rotate: -90 },
@@ -52,6 +59,7 @@ const Header = () => {
     mm.add("(min-width: 768px)", () => {
       desktopTl.current = gsap.timeline();
       desktopTl.current
+      // logo slide in
         .from(logoRef.current, {
           y: -50,
           opacity: 0,
@@ -59,6 +67,7 @@ const Header = () => {
           delay: 0.6,
           ease: "power2.out",
         })
+        // menu items slide in
         .from(
           menuItemsRef.current!.children,
           {
@@ -71,53 +80,73 @@ const Header = () => {
         );
     });
 
-    return () => mm.revert();
+    return () => mm.revert(); // cleanup on unmount
   });
 
+  // Play or reverse mobile menu timeline when isOpen changes
   useGSAP(
     () => {
       if (!mobileTl.current) return;
-      isOpen ? mobileTl.current.play() : mobileTl.current.reverse();
+
+      if (isOpen) {
+        mobileTl.current.play();
+      } else {
+        mobileTl.current.reverse();
+      }
     },
     { dependencies: [isOpen] }
   );
 
   return (
-    <nav className="flex justify-between items-center p-6 h-[10vh] bg-black/80 fixed top-0 w-screen z-1">
+    <nav className="flex justify-between items-center p-6 h-[10vh] bg-black /50 fixed top-0 w-screen z-1">
+      {/* Logo */}
       <h1 ref={logoRef} className="text-3xl font-bold">
         JvkeDev
       </h1>
-
-      <img
-        ref={menuRef}
-        src="menu.svg"
-        alt="menu"
-        className="w-10 cursor-pointer md:hidden absolute right-6"
+    {/* Mobile menu icon */}
+      <div
+        ref={menuRef} // Animate this div
+        className="absolute right-6 md:hidden w-10 h-10 cursor-pointer"
         onClick={() => setIsOpen(true)}
-      />
+      >
+        <Image
+          src="/menu.svg"
+          alt="menu"
+          fill
+          style={{ objectFit: "contain" }}
+        />
+      </div>
 
-      <img
+    {/* Mobile close icon */}
+      <div
         ref={crossRef}
-        src="cross.svg"
-        alt="close"
-        className="w-10 cursor-pointer md:hidden opacity-0"
+        className="absolute right-6 md:hidden w-10 h-10 cursor-pointer opacity-0"
         onClick={() => setIsOpen(false)}
-      />
+      >
+        <Image
+          src="/close.svg"
+          alt="close"
+          fill
+          style={{ objectFit: "contain" }}
+        />
+      </div>
 
+    {/* Mobile items (mobile % desktop) */}
       <ul
         ref={menuItemsRef}
         className="
           fixed top-[10vh] right-0
           w-2/3 h-[90vh]
-          bg-black/30 backdrop-blur-xs
+          bg-black/50 backdrop-blur-xs 
           text-2xl font-semibold p-7
           flex flex-col space-y-5
           opacity-0 translate-x-full
 
-          md:static md:h-auto md:w-auto
+          md:static md:h-[10vh] md:w-auto
           md:flex-row md:items-center
           md:space-y-0 md:space-x-10
           md:opacity-100 md:translate-x-0
+          md:bg-transparent
         "
       >
         <li>Hero</li>
